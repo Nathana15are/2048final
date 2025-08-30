@@ -2,20 +2,45 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2048 Ultra Deluxe v8</title>
+  <title>2048 Ultra Deluxe v9</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>2048 Ultra Deluxe v8 🚀</h1>
-  <div id="like-container">
-    <button id="like-btn">❤️ Like</button>
-    <span id="like-count">0</span>
+  <div class="container">
+    <h1>2048 Ultra Deluxe v9 🚀</h1>
+
+    <!-- Compteurs fake global -->
+    <div class="stats">
+      <div id="likes">❤️ Likes : <span id="likeCount">100</span></div>
+      <button id="likeBtn">👍 Liker</button>
+      <div id="parties">🎲 Parties jouées : <span id="gamesCount">200</span></div>
+    </div>
+
+    <!-- Modes de jeu -->
+    <div class="modes">
+      <button onclick="startGame('normal')">Mode Normal</button>
+      <button onclick="startGame('infinite')">Mode Infini</button>
+    </div>
+
+    <!-- Grille -->
+    <div id="game-container">
+      <div id="grid"></div>
+    </div>
+
+    <!-- Score + Leaderboard -->
+    <div class="scoreboard">
+      <p>Score : <span id="score">0</span></p>
+      <h3>🏆 Leaderboard local</h3>
+      <ul id="leaderboard"></ul>
+    </div>
+
+    <!-- Partage -->
+    <div id="share" style="display:none;">
+      <p>Ton score final : <span id="finalScore"></span></p>
+      <button onclick="shareScore()">📤 Partager</button>
+    </div>
   </div>
-  <div id="gameContainer">
-    <div id="grid-container"></div>
-    <div id="score">Score: <span id="score-value">0</span></div>
-  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
