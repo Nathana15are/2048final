@@ -1,96 +1,73 @@
 body {
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  color: white;
   font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #1e1e2e, #2b2d42, #3a0ca3);
+  color: #fff;
   text-align: center;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  overflow: hidden;
 }
 
-h1 {
-  margin-bottom: 20px;
+.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
 }
 
-#like-container {
-  margin: 15px;
-  position: relative;
-}
-
-#like-btn {
-  background: #ff0055;
+button {
+  background: #ff0077;
   border: none;
-  color: white;
   padding: 10px 20px;
+  margin: 5px;
   border-radius: 8px;
+  color: white;
+  font-weight: bold;
   cursor: pointer;
-  font-size: 18px;
+  transition: transform 0.2s;
+}
+button:hover {
+  transform: scale(1.1);
+  background: #ff3399;
 }
 
-#like-count {
-  font-size: 22px;
-  margin-left: 10px;
+#game-container {
+  margin: 20px auto;
+  background: #222;
+  padding: 10px;
+  border-radius: 10px;
+  display: inline-block;
 }
 
-/* Animation Like Pulse */
-@keyframes pulse {
-  0% { transform: scale(1); color: #fff; }
-  50% { transform: scale(1.5); color: #ffea00; }
-  100% { transform: scale(1); color: #fff; }
-}
-
-.like-anim {
-  animation: pulse 0.4s ease;
-}
-
-/* Coeur flottant */
-.heart {
-  position: absolute;
-  font-size: 20px;
-  color: #ff0055;
-  animation: floatUp 1s ease forwards;
-  pointer-events: none;
-}
-
-@keyframes floatUp {
-  0% { transform: scale(0.5) translateY(0); opacity: 1; }
-  50% { transform: scale(1.2) translateY(-30px); opacity: 0.8; }
-  100% { transform: scale(0.8) translateY(-60px); opacity: 0; }
-}
-
-#gameContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-#grid-container {
+#grid {
   display: grid;
   grid-template-columns: repeat(4, 80px);
-  grid-template-rows: repeat(4, 80px);
-  gap: 5px;
-  margin: 20px auto;
+  grid-gap: 5px;
 }
 
-.tile {
+.cell {
   width: 80px;
   height: 80px;
+  background: #444;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.2);
-  font-size: 24px;
-  border-radius: 5px;
+  align-items: center;
+  font-size: 20px;
+  border-radius: 6px;
+  font-weight: bold;
   transition: all 0.2s ease-in-out;
 }
 
-#score {
-  margin-top: 10px;
+.stats {
+  margin-bottom: 15px;
+}
+
+.heart {
+  position: absolute;
   font-size: 20px;
+  animation: floatUp 1s ease forwards;
+  color: #ff3399;
+}
+
+@keyframes floatUp {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-50px); }
 }
