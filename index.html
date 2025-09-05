@@ -2,45 +2,155 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>2048 Ultra Deluxe v9</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fonds d'écran collaboratif</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:0; }
+    header { display:flex; justify-content:space-between; padding:15px; background:#fff; border-bottom:1px solid #ddd; }
+    nav a { margin-left:20px; text-decoration:none; color:#111; font-weight:bold; }
+    .container { max-width:900px; margin:auto; padding:20px; }
+    h1,h2,h3 { color:#111; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; }
+    .wallpaper { background:#fff; padding:10px; border-radius:6px; box-shadow:0 2px 5px rgba(0,0,0,0.1); text-align:center; }
+    .wallpaper img { width:100%; border-radius:6px; margin-bottom:10px; }
+    input, button { width:100%; padding:10px; margin:6px 0; border-radius:6px; border:1px solid #ddd; }
+    button { background:#111; color:#fff; cursor:pointer; }
+    button:hover { background:#333; }
+    .admin-box { background:#fff; padding:20px; border-radius:8px; margin-top:20px; display:none; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    #previewBox { display:none; margin-top:10px; text-align:center; }
+    #previewBox img { max-width:100%; border-radius:6px; }
+  </style>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
-  <div class="container">
-    <h1>2048 Ultra Deluxe v9 🚀</h1>
 
-    <!-- Compteurs fake global -->
-    <div class="stats">
-      <div id="likes">❤️ Likes : <span id="likeCount">100</span></div>
-      <button id="likeBtn">👍 Liker</button>
-      <div id="parties">🎲 Parties jouées : <span id="gamesCount">200</span></div>
-    </div>
+<header>
+  <div class="logo">🌍 Fonds d'écran</div>
+  <nav>
+    <a href="#" onclick="showAdmin()">Admin</a>
+  </nav>
+</header>
 
-    <!-- Modes de jeu -->
-    <div class="modes">
-      <button onclick="startGame('normal')">Mode Normal</button>
-      <button onclick="startGame('infinite')">Mode Infini</button>
-    </div>
+<div class="container">
+  <h1>Galerie de fonds d’écran</h1>
+  <div id="gallery" class="grid"></div>
 
-    <!-- Grille -->
-    <div id="game-container">
-      <div id="grid"></div>
-    </div>
-
-    <!-- Score + Leaderboard -->
-    <div class="scoreboard">
-      <p>Score : <span id="score">0</span></p>
-      <h3>🏆 Leaderboard local</h3>
-      <ul id="leaderboard"></ul>
-    </div>
-
-    <!-- Partage -->
-    <div id="share" style="display:none;">
-      <p>Ton score final : <span id="finalScore"></span></p>
-      <button onclick="shareScore()">📤 Partager</button>
-    </div>
+  <h2>Proposer un fond d’écran</h2>
+  <input type="text" id="imgTitle" placeholder="Titre du fond d’écran">
+  <input type="url" id="imgUrl" placeholder="Lien de l'image (https://)" oninput="previewImage()">
+  
+  <!-- Aperçu de l'image -->
+  <div id="previewBox">
+    <p>Aperçu :</p>
+    <img id="previewImg" src="" alt="Aperçu">
   </div>
 
-  <script src="script.js"></script>
+  <!-- reCAPTCHA -->
+  <div class="g-recaptcha" data-sitekey="VOTRE_SITE_KEY"></div>
+  <button onclick="addImage()">Ajouter</button>
+
+  <!-- Zone Admin -->
+  <div id="adminBox" class="admin-box">
+    <h2>Admin (supprimer des images)</h2>
+    <div id="loginBox">
+      <input type="password" id="password" placeholder="Mot de passe admin">
+      <button onclick="checkPassword()">Connexion</button>
+    </div>
+    <div id="manageBox" style="display:none;">
+      <h3>Images ajoutées</h3>
+      <div id="adminGallery" class="grid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Charger la galerie
+  function loadImages() {
+    let gallery = document.getElementById("gallery");
+    gallery.innerHTML = "";
+    let images = JSON.parse(localStorage.getItem("customImages") || "[]");
+    images.forEach((img) => {
+      let div = document.createElement("div");
+      div.className = "wallpaper";
+      div.innerHTML = `<img src="${img.url}" alt="${img.title}"><p>${img.title}</p>`;
+      gallery.appendChild(div);
+    });
+  }
+
+  // Aperçu instantané
+  function previewImage() {
+    let url = document.getElementById("imgUrl").value;
+    let previewBox = document.getElementById("previewBox");
+    let previewImg = document.getElementById("previewImg");
+    if (url.startsWith("http")) {
+      previewImg.src = url;
+      previewBox.style.display = "block";
+    } else {
+      previewBox.style.display = "none";
+    }
+  }
+
+  // Ajouter une image
+  function addImage() {
+    let response = grecaptcha.getResponse();
+    if(response.length == 0) {
+      alert("Merci de valider le reCAPTCHA !");
+      return;
+    }
+    let title = document.getElementById("imgTitle").value;
+    let url = document.getElementById("imgUrl").value;
+    if (title && url) {
+      let images = JSON.parse(localStorage.getItem("customImages") || "[]");
+      images.push({title:title, url:url});
+      localStorage.setItem("customImages", JSON.stringify(images));
+      alert("✅ Image ajoutée !");
+      loadImages();
+      document.getElementById("imgTitle").value = "";
+      document.getElementById("imgUrl").value = "";
+      document.getElementById("previewBox").style.display = "none";
+      grecaptcha.reset(); // reset captcha
+    } else {
+      alert("Merci de remplir tous les champs !");
+    }
+  }
+
+  // Admin
+  function showAdmin() {
+    document.getElementById("adminBox").style.display = "block";
+  }
+  function checkPassword() {
+    let pass = document.getElementById("password").value;
+    if (pass === "Marius2013.") {
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("manageBox").style.display = "block";
+      loadAdminGallery();
+    } else {
+      alert("Mot de passe incorrect !");
+    }
+  }
+  function loadAdminGallery() {
+    let adminGallery = document.getElementById("adminGallery");
+    adminGallery.innerHTML = "";
+    let images = JSON.parse(localStorage.getItem("customImages") || "[]");
+    images.forEach((img, i) => {
+      let div = document.createElement("div");
+      div.className = "wallpaper";
+      div.innerHTML = `
+        <img src="${img.url}" alt="${img.title}">
+        <p>${img.title}</p>
+        <button onclick="deleteImage(${i})">🗑 Supprimer</button>`;
+      adminGallery.appendChild(div);
+    });
+  }
+  function deleteImage(i) {
+    let images = JSON.parse(localStorage.getItem("customImages") || "[]");
+    images.splice(i,1);
+    localStorage.setItem("customImages", JSON.stringify(images));
+    loadImages();
+    loadAdminGallery();
+  }
+
+  loadImages();
+</script>
 </body>
 </html>
